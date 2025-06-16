@@ -28,40 +28,41 @@ export const FinancialCompliance: React.FC<FinancialComplianceProps> = ({ data, 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 lg:space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Financial Details</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg lg:text-xl">Financial Details</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="carParkingCost">Car Parking Cost (₹)</Label>
+            <Label htmlFor="carParkingCost" className="text-sm font-medium">Car Parking Cost (₹)</Label>
             <Input
               id="carParkingCost"
               type="number"
               placeholder="e.g., 200000"
               value={data.carParkingCost || ''}
               onChange={(e) => handleInputChange('carParkingCost', e.target.value)}
+              className="text-base"
             />
-            <p className="text-sm text-gray-500">Additional cost for car parking space</p>
+            <p className="text-xs lg:text-sm text-gray-500">Additional cost for car parking space</p>
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Home Loan Partners</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg lg:text-xl">Home Loan Partners</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {banks.map((bank) => (
-              <div key={bank} className="flex items-center space-x-2">
+              <div key={bank} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-50">
                 <Checkbox
                   id={`bank-${bank}`}
                   checked={(data.homeLoanBanks || []).includes(bank)}
                   onCheckedChange={(checked) => handleBankToggle(bank, checked as boolean)}
                 />
-                <Label htmlFor={`bank-${bank}`} className="text-sm font-normal">
+                <Label htmlFor={`bank-${bank}`} className="text-sm font-normal cursor-pointer flex-1">
                   {bank}
                 </Label>
               </div>
@@ -71,14 +72,14 @@ export const FinancialCompliance: React.FC<FinancialComplianceProps> = ({ data, 
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Construction Material</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg lg:text-xl">Construction Material</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="constructionMaterial">Primary Construction Material</Label>
+            <Label htmlFor="constructionMaterial" className="text-sm font-medium">Primary Construction Material</Label>
             <Select onValueChange={(value) => handleInputChange('constructionMaterial', value)}>
-              <SelectTrigger>
+              <SelectTrigger className="text-base">
                 <SelectValue placeholder="Select construction material" />
               </SelectTrigger>
               <SelectContent>
@@ -93,11 +94,11 @@ export const FinancialCompliance: React.FC<FinancialComplianceProps> = ({ data, 
         </CardContent>
       </Card>
 
-      <div className="flex justify-end space-x-4 pt-6">
-        <button className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+      <div className="flex flex-col sm:flex-row gap-3 sm:justify-end pt-4 lg:pt-6">
+        <button className="px-4 lg:px-6 py-3 lg:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm lg:text-base">
           Save as Draft
         </button>
-        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+        <button className="px-4 lg:px-6 py-3 lg:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm lg:text-base">
           Submit Project
         </button>
       </div>
