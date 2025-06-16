@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface ConstructionSpecsProps {
   data: any;
@@ -15,6 +16,33 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
   const handleInputChange = (field: string, value: string) => {
     onUpdate({ [field]: value });
   };
+
+  const handleAmenityChange = (amenity: string, checked: boolean) => {
+    const currentAmenities = data.amenities || [];
+    let updatedAmenities;
+    
+    if (checked) {
+      updatedAmenities = [...currentAmenities, amenity];
+    } else {
+      updatedAmenities = currentAmenities.filter((item: string) => item !== amenity);
+    }
+    
+    onUpdate({ amenities: updatedAmenities });
+  };
+
+  const amenitiesList = [
+    'Swimming Pool',
+    'Gymnasium',
+    'Clubhouse',
+    'Children\'s Play Area',
+    'Landscaped Gardens',
+    'Jogging Track',
+    'Tennis Court',
+    'Basketball Court',
+    'Security System',
+    'Power Backup',
+    'Rainwater Harvesting'
+  ];
 
   return (
     <div className="space-y-6">
@@ -112,15 +140,22 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
             </Select>
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="amenities">Amenities</Label>
-            <Textarea
-              id="amenities"
-              placeholder="List all amenities (Swimming pool, Gym, Clubhouse, etc.)"
-              value={data.amenities || ''}
-              onChange={(e) => handleInputChange('amenities', e.target.value)}
-              rows={4}
-            />
+          <div className="space-y-3">
+            <Label>Amenities</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {amenitiesList.map((amenity) => (
+                <div key={amenity} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={amenity}
+                    checked={data.amenities?.includes(amenity) || false}
+                    onCheckedChange={(checked) => handleAmenityChange(amenity, checked as boolean)}
+                  />
+                  <Label htmlFor={amenity} className="text-sm font-normal cursor-pointer">
+                    {amenity}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
           
           <div className="space-y-2">
