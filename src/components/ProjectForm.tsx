@@ -6,12 +6,14 @@ import { ProjectBasics } from '@/components/forms/ProjectBasics';
 import { ConstructionSpecs } from '@/components/forms/ConstructionSpecs';
 import { UnitConfigurations } from '@/components/forms/UnitConfigurations';
 import { FinancialCompliance } from '@/components/forms/FinancialCompliance';
+import { SecondaryDetails } from '@/components/forms/SecondaryDetails';
 
 interface FormData {
   basics?: any;
   construction?: any;
   units?: any;
   financial?: any;
+  secondary?: any;
 }
 
 export const ProjectForm = () => {
@@ -31,7 +33,7 @@ export const ProjectForm = () => {
       </CardHeader>
       <CardContent className="px-2 sm:px-4">
         <Tabs defaultValue="basics" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-1">
             <TabsTrigger value="basics" className="text-xs sm:text-sm py-2">
               Project Basics
             </TabsTrigger>
@@ -43,6 +45,9 @@ export const ProjectForm = () => {
             </TabsTrigger>
             <TabsTrigger value="financial" className="text-xs sm:text-sm py-2">
               Financial
+            </TabsTrigger>
+            <TabsTrigger value="secondary" className="text-xs sm:text-sm py-2">
+              Secondary Details
             </TabsTrigger>
           </TabsList>
           
@@ -71,6 +76,13 @@ export const ProjectForm = () => {
             <FinancialCompliance 
               data={formData.financial || {}} 
               onUpdate={(data) => updateFormData('financial', data)} 
+            />
+          </TabsContent>
+          
+          <TabsContent value="secondary" className="mt-4">
+            <SecondaryDetails 
+              data={formData.secondary || {}} 
+              onUpdate={(data) => updateFormData('secondary', data)} 
             />
           </TabsContent>
         </Tabs>
