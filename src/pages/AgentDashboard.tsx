@@ -58,7 +58,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
   const renderContent = () => {
     switch (selectedOption) {
       case 'full':
-        return <ProjectForm initialData={draftData} />;
+        return <ProjectForm />;
       case 'short':
         return <ShortFormOnboarding agentData={agentData} onDraftSaved={handleDraftSaved} />;
       case 'reports':
