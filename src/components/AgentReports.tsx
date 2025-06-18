@@ -4,18 +4,43 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Calendar, Building2, FileText } from 'lucide-react';
+import { Search, Calendar, Building2, FileText, X, ArrowLeft } from 'lucide-react';
 
 interface AgentReportsProps {
   agentData: any;
 }
 
+interface Submission {
+  id: number;
+  projectName: string;
+  builderName: string;
+  submissionType: string;
+  status: string;
+  date: string;
+  time: string;
+  details?: {
+    reraNumber: string;
+    projectType: string;
+    floors: number;
+    flatsPerFloor: number;
+    possessionDate: string;
+    openSpace: string;
+    carpetArea: string;
+    ceilingHeight: string;
+    commission: string;
+    pocName: string;
+    pocNumber: string;
+    pocRole: string;
+  };
+}
+
 export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState('');
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
 
-  // Mock data for agent's submissions
-  const agentSubmissions = [
+  // Mock data for agent's submissions with detailed information
+  const agentSubmissions: Submission[] = [
     {
       id: 1,
       projectName: 'Cloud 9 Residency',
@@ -23,7 +48,21 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
       submissionType: 'Full Onboarding',
       status: 'submitted',
       date: '2024-06-15',
-      time: '10:30 AM'
+      time: '10:30 AM',
+      details: {
+        reraNumber: 'P024000001XX',
+        projectType: 'Gated',
+        floors: 30,
+        flatsPerFloor: 10,
+        possessionDate: 'July 2026',
+        openSpace: '70%',
+        carpetArea: '20%',
+        ceilingHeight: '10ft',
+        commission: '2.5%',
+        pocName: 'John Doe',
+        pocNumber: '+91 9876543210',
+        pocRole: 'Project Manager'
+      }
     },
     {
       id: 2,
@@ -32,7 +71,21 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
       submissionType: 'Short-Form',
       status: 'draft',
       date: '2024-06-14',
-      time: '3:45 PM'
+      time: '3:45 PM',
+      details: {
+        reraNumber: 'P024000002XX',
+        projectType: 'Semi-gated',
+        floors: 25,
+        flatsPerFloor: 8,
+        possessionDate: 'December 2025',
+        openSpace: '65%',
+        carpetArea: '22%',
+        ceilingHeight: '9.5ft',
+        commission: '3%',
+        pocName: 'Jane Smith',
+        pocNumber: '+91 9876543211',
+        pocRole: 'Sales Head'
+      }
     },
     {
       id: 3,
@@ -41,7 +94,21 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
       submissionType: 'Full Onboarding',
       status: 'submitted',
       date: '2024-06-13',
-      time: '11:15 AM'
+      time: '11:15 AM',
+      details: {
+        reraNumber: 'P024000003XX',
+        projectType: 'Stand-alone',
+        floors: 40,
+        flatsPerFloor: 12,
+        possessionDate: 'March 2027',
+        openSpace: '75%',
+        carpetArea: '18%',
+        ceilingHeight: '11ft',
+        commission: '2%',
+        pocName: 'Mike Johnson',
+        pocNumber: '+91 9876543212',
+        pocRole: 'Director'
+      }
     }
   ];
 
@@ -78,6 +145,122 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
       return submissionDate >= weekAgo;
     }).length
   };
+
+  const handleViewDetails = (submission: Submission) => {
+    setSelectedSubmission(submission);
+  };
+
+  const handleBackToList = () => {
+    setSelectedSubmission(null);
+  };
+
+  if (selectedSubmission) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="sm" onClick={handleBackToList}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Reports
+          </Button>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Project Details</h2>
+            <p className="text-gray-600">{selectedSubmission.projectName}</p>
+          </div>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <CardTitle className="flex items-center gap-3">
+                  {selectedSubmission.projectName}
+                  <Badge className={getStatusColor(selectedSubmission.status)}>
+                    {selectedSubmission.status}
+                  </Badge>
+                  <Badge variant="outline">
+                    {selectedSubmission.submissionType}
+                  </Badge>
+                </CardTitle>
+                <p className="text-sm text-gray-600 mt-1">Builder: {selectedSubmission.builderName}</p>
+              </div>
+              <div className="text-sm text-gray-500">
+                Submitted on {selectedSubmission.date} at {selectedSubmission.time}
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg text-gray-900">Project Information</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">RERA Number</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.reraNumber}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Project Type</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.projectType}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Number of Floors</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.floors}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Flats Per Floor</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.flatsPerFloor}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Possession Date</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.possessionDate}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg text-gray-900">Project Specifications</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Open Space</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.openSpace}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Carpet Area %</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.carpetArea}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Ceiling Height</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.ceilingHeight}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">Commission</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.commission}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 md:col-span-2">
+                <h3 className="font-semibold text-lg text-gray-900">Point of Contact</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">POC Name</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.pocName}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">POC Number</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.pocNumber}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">POC Role</label>
+                    <p className="text-gray-900">{selectedSubmission.details?.pocRole}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -192,7 +375,7 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
                     </p>
                   </div>
                   <div className="mt-3 md:mt-0">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" onClick={() => handleViewDetails(submission)}>
                       View Details
                     </Button>
                   </div>

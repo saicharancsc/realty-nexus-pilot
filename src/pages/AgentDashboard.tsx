@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Edit, LogOut, Building2, BarChart3 } from 'lucide-react';
+import { FileText, Edit, LogOut, Building2, BarChart3, Menu, X } from 'lucide-react';
 import { ProjectForm } from '@/components/ProjectForm';
 import { ShortFormOnboarding } from '@/components/ShortFormOnboarding';
 import { AgentReports } from '@/components/AgentReports';
@@ -14,13 +14,16 @@ interface AgentDashboardProps {
 
 const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) => {
   const [selectedOption, setSelectedOption] = useState<'selection' | 'full' | 'short' | 'reports'>('selection');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleOptionSelect = (option: 'full' | 'short' | 'reports') => {
     setSelectedOption(option);
+    setSidebarOpen(false); // Close sidebar on mobile when option is selected
   };
 
   const handleBackToSelection = () => {
     setSelectedOption('selection');
+    setSidebarOpen(false);
   };
 
   const sidebarItems = [
@@ -121,15 +124,43 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+      <div className={`
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+        lg:translate-x-0 
+        fixed lg:static 
+        inset-y-0 left-0 
+        w-64 
+        bg-white shadow-lg border-r border-gray-200 
+        flex flex-col 
+        z-50 
+        transition-transform duration-300 ease-in-out
+      `}>
         <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center space-x-3">
-            <Building2 className="w-8 h-8 text-green-600" />
-            <div>
-              <h2 className="text-lg font-bold text-gray-800">Agent Portal</h2>
-              <p className="text-sm text-gray-600">{agentData.name}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Building2 className="w-8 h-8 text-green-600" />
+              <div>
+                <h2 className="text-lg font-bold text-gray-800">Agent Portal</h2>
+                <p className="text-sm text-gray-600">{agentData.name}</p>
+              </div>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="lg:hidden"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <X className="w-5 h-5" />
+            </Button>
           </div>
         </div>
         
@@ -169,12 +200,22 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white shadow-sm border-b border-gray-200 px-4 lg:px-6 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-800">{getPageTitle()}</h1>
-              <p className="text-sm text-gray-600">Agent: {agentData.name}</p>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="lg:hidden"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+              <div>
+                <h1 className="text-xl font-semibold text-gray-800">{getPageTitle()}</h1>
+                <p className="text-sm text-gray-600">Agent: {agentData.name}</p>
+              </div>
             </div>
             {(selectedOption === 'full' || selectedOption === 'short' || selectedOption === 'reports') && (
               <Button onClick={handleBackToSelection} variant="outline" size="sm">
@@ -184,7 +225,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
           </div>
         </header>
 
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-4 lg:p-6 overflow-auto">
           {renderContent()}
         </main>
       </div>
