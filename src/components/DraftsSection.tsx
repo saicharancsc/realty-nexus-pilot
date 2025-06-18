@@ -13,6 +13,46 @@ interface DraftsSectionProps {
 export const DraftsSection: React.FC<DraftsSectionProps> = ({ agentData, onEditDraft }) => {
   const [drafts, setDrafts] = useState<any[]>([]);
 
+  // Hardcoded example drafts
+  const exampleDrafts = [
+    {
+      id: 'example-1',
+      projectName: 'Skyline Towers',
+      builderName: 'Urban Developers Ltd',
+      reraNumber: 'P02400000123',
+      projectType: 'residential',
+      pocName: 'Rajesh Kumar',
+      pocNumber: '+91 98765 43210',
+      createdAt: '2024-01-15T10:30:00.000Z',
+      status: 'draft',
+      formType: 'short-form'
+    },
+    {
+      id: 'example-2',
+      projectName: 'Green Valley Apartments',
+      builderName: 'Eco Constructions',
+      reraNumber: 'P02400000456',
+      projectType: 'commercial',
+      pocName: 'Priya Sharma',
+      pocNumber: '+91 87654 32109',
+      createdAt: '2024-01-14T15:45:00.000Z',
+      status: 'draft',
+      formType: 'short-form'
+    },
+    {
+      id: 'example-3',
+      projectName: 'Metro Business Park',
+      builderName: 'Prime Builders',
+      reraNumber: 'P02400000789',
+      projectType: 'mixed',
+      pocName: 'Amit Patel',
+      pocNumber: '+91 76543 21098',
+      createdAt: '2024-01-13T09:15:00.000Z',
+      status: 'draft',
+      formType: 'short-form'
+    }
+  ];
+
   useEffect(() => {
     // Load drafts from localStorage
     const loadDrafts = () => {
@@ -28,9 +68,15 @@ export const DraftsSection: React.FC<DraftsSectionProps> = ({ agentData, onEditD
           }
         }
       }
-      // Sort by creation date (newest first)
-      allDrafts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setDrafts(allDrafts);
+      
+      // If no real drafts exist, use example drafts
+      if (allDrafts.length === 0) {
+        setDrafts(exampleDrafts);
+      } else {
+        // Sort by creation date (newest first)
+        allDrafts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setDrafts(allDrafts);
+      }
     };
 
     loadDrafts();
@@ -94,6 +140,11 @@ export const DraftsSection: React.FC<DraftsSectionProps> = ({ agentData, onEditD
                     <Badge variant="outline" className="text-orange-600 border-orange-200">
                       Draft
                     </Badge>
+                    {draft.id.startsWith('example-') && (
+                      <Badge variant="outline" className="text-blue-600 border-blue-200">
+                        Example
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <Button 
