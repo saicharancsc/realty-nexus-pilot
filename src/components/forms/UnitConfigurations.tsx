@@ -4,6 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Plus, Trash2 } from 'lucide-react';
 
 interface UnitConfigurationsProps {
   data: any;
@@ -11,7 +13,7 @@ interface UnitConfigurationsProps {
 }
 
 export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, onUpdate }) => {
-  const unitTypes = ['1BHK', '2BHK', '3BHK', '4BHK', '5BHK', 'Villa Duplex', 'Villa Triplex'];
+  const unitTypes = ['1BHK', '2BHK', '2.5BHK', '3BHK', '3.5BHK', '4BHK', '4.5BHK', '5BHK', 'Villa', 'Villa Duplex', 'Villa Triplex'];
   
   const handleUnitTypeToggle = (unitType: string, checked: boolean) => {
     const currentUnits = data.unitTypes || {};
@@ -22,7 +24,7 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
           ...currentUnits[unitType],
           enabled: checked,
           sizes: currentUnits[unitType]?.sizes || ['', '', '', ''],
-          parking: currentUnits[unitType]?.parking || ['', '', '', '']
+          parkingSlots: checked ? (currentUnits[unitType]?.parkingSlots || [{ slots: '' }]) : []
         }
       }
     });
@@ -30,7 +32,7 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
 
   const handleSizeChange = (unitType: string, index: number, value: string) => {
     const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parking: ['', '', '', ''] };
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
     const newSizes = [...currentUnit.sizes];
     newSizes[index] = value;
     
@@ -45,18 +47,48 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
     });
   };
 
-  const handleParkingChange = (unitType: string, index: number, value: string) => {
+  const addParkingSlot = (unitType: string) => {
     const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parking: ['', '', '', ''] };
-    const newParking = [...currentUnit.parking];
-    newParking[index] = value;
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
     
     onUpdate({
       unitTypes: {
         ...currentUnits,
         [unitType]: {
           ...currentUnit,
-          parking: newParking
+          parkingSlots: [...(currentUnit.parkingSlots || []), { slots: '' }]
+        }
+      }
+    });
+  };
+
+  const removeParkingSlot = (unitType: string, index: number) => {
+    const currentUnits = data.unitTypes || {};
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
+    
+    onUpdate({
+      unitTypes: {
+        ...currentUnits,
+        [unitType]: {
+          ...currentUnit,
+          parkingSlots: currentUnit.parkingSlots?.filter((_: any, i: number) => i !== index) || []
+        }
+      }
+    });
+  };
+
+  const updateParkingSlot = (unitType: string, index: number, value: string) => {
+    const currentUnits = data.unitTypes || {};
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
+    
+    onUpdate({
+      unitTypes: {
+        ...currentUnits,
+        [unitType]: {
+          ...currentUnit,
+          parkingSlots: currentUnit.parkingSlots?.map((slot: any, i: number) => 
+            i === index ? { ...slot, slots: value } : slot
+          ) || []
         }
       }
     });
@@ -65,7 +97,7 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
   return (
     <div className="space-y-6">
       {unitTypes.map((unitType) => {
-        const unitData = data.unitTypes?.[unitType] || { enabled: false, sizes: ['', '', '', ''], parking: ['', '', '', ''] };
+        const unitData = data.unitTypes?.[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
         
         return (
           <Card key={unitType}>
@@ -104,22 +136,39 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
                   </div>
                   
                   <div>
-                    <h4 className="font-semibold mb-3 text-gray-700">Car Parking Slots</h4>
+                    <h4 className="font-semibold mb-3 text-gray-700">Parking Slots Configuration</h4>
                     <div className="space-y-3">
-                      {[1, 2, 3, 4].map((parkingIndex) => (
-                        <div key={parkingIndex} className="space-y-2">
-                          <Label htmlFor={`${unitType}-parking-${parkingIndex}`}>
-                            Parking for Size {parkingIndex}
-                          </Label>
+                      {(unitData.parkingSlots || []).map((slot: any, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
                           <Input
-                            id={`${unitType}-parking-${parkingIndex}`}
                             type="number"
                             placeholder="Number of parking slots"
-                            value={unitData.parking[parkingIndex - 1]}
-                            onChange={(e) => handleParkingChange(unitType, parkingIndex - 1, e.target.value)}
+                            value={slot.slots}
+                            onChange={(e) => updateParkingSlot(unitType, index, e.target.value)}
+                            className="flex-1"
                           />
+                          {(unitData.parkingSlots || []).length > 1 && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => removeParkingSlot(unitType, index)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
                         </div>
                       ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addParkingSlot(unitType)}
+                        className="flex items-center gap-2"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Parking Option
+                      </Button>
                     </div>
                   </div>
                 </div>

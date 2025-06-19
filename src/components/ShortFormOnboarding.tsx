@@ -46,7 +46,7 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
     unitConfigurations: {}
   });
 
-  const unitTypes = ['1BHK', '2BHK', '3BHK', '4BHK', '5BHK', 'Villa Duplex', 'Villa Triplex'];
+  const unitTypes = ['1BHK', '2BHK', '2.5BHK', '3BHK', '3.5BHK', '4BHK', '4.5BHK', '5BHK', 'Villa', 'Villa Duplex', 'Villa Triplex'];
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
@@ -144,7 +144,7 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         commonArea: '',
       },
       units: {
-        unitConfigurations: shortFormData.unitConfigurations,
+        unitTypes: shortFormData.unitConfigurations,
         // Leave other unit fields empty
       },
       financial: {
