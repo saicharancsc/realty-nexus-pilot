@@ -11,9 +11,10 @@ import { Plus, Trash2 } from 'lucide-react';
 
 interface ShortFormOnboardingProps {
   agentData: any;
+  onDraftSaved?: (draftData: any) => void;
 }
 
-export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentData }) => {
+export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentData, onDraftSaved }) => {
   const [formData, setFormData] = useState<any>({
     projectName: '',
     builderName: '',
@@ -106,18 +107,104 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
     }));
   };
 
+  const convertToFullFormData = (shortFormData: any) => {
+    // Convert short-form data to full-form structure
+    return {
+      basics: {
+        projectName: shortFormData.projectName,
+        builderName: shortFormData.builderName,
+        reraNumber: shortFormData.reraNumber,
+        projectType: shortFormData.projectType,
+        numberOfFloors: shortFormData.numberOfFloors,
+        flatsPerFloor: shortFormData.flatsPerFloor,
+        possessionDate: shortFormData.possessionDate,
+        openSpace: shortFormData.openSpace,
+        carpetAreaPercent: shortFormData.carpetAreaPercent,
+        ceilingHeight: shortFormData.ceilingHeight,
+        // Leave other basic fields empty for full form
+        projectAddress: '',
+        landmark: '',
+        pincode: '',
+        city: '',
+        state: '',
+        totalUnits: '',
+        totalTowers: '',
+        clubhouse: '',
+        commercialSpace: '',
+      },
+      construction: {
+        // Leave construction fields empty for full form
+        structureType: '',
+        constructionQuality: '',
+        floorPlan: '',
+        elevatorBrand: '',
+        elevatorCount: '',
+        staircase: '',
+        corridor: '',
+        commonArea: '',
+      },
+      units: {
+        unitConfigurations: shortFormData.unitConfigurations,
+        // Leave other unit fields empty
+      },
+      financial: {
+        commissionType: shortFormData.commissionType,
+        commissionPercent: shortFormData.commissionPercent,
+        cutoffTheirPrice: shortFormData.cutoffTheirPrice,
+        cutoffRelaiPrice: shortFormData.cutoffRelaiPrice,
+        payoutTimePeriod: shortFormData.payoutTimePeriod,
+        // Leave other financial fields empty
+        basePrice: '',
+        totalPrice: '',
+        registrationCharges: '',
+        maintenanceCharges: '',
+        otherCharges: '',
+      },
+      secondary: {
+        floorCharger: shortFormData.floorCharger,
+        floorChargerAmount: shortFormData.floorChargerAmount,
+        floorChargerAbove: shortFormData.floorChargerAbove,
+        facingCharges: shortFormData.facingCharges,
+        plc: shortFormData.plc,
+        plcConditions: shortFormData.plcConditions,
+        powerBackup: shortFormData.powerBackup,
+        groundVehicleMovement: shortFormData.groundVehicleMovement,
+        wowFactorAmenity: shortFormData.wowFactorAmenity,
+        pocName: shortFormData.pocName,
+        pocNumber: shortFormData.pocNumber,
+        pocRole: shortFormData.pocRole,
+        // Leave other secondary fields empty
+        amenities: [],
+        specifications: '',
+        approvals: '',
+        bankApprovals: [],
+      }
+    };
+  };
+
   const handleSaveDraft = () => {
+    if (!formData.projectName.trim()) {
+      alert('Please enter a project name before saving as draft.');
+      return;
+    }
+
+    const fullFormData = convertToFullFormData(formData);
+    
     const draftData = {
-      ...formData,
+      ...fullFormData,
       agentName: agentData.name,
       agentEmail: agentData.email,
       submittedDate: new Date().toISOString().split('T')[0],
       status: 'draft',
-      formType: 'short-form'
+      formType: 'converted-from-short-form',
+      originalShortFormData: formData // Keep original data for reference
     };
+
     console.log('Saving draft:', draftData);
-    // In real app, this would save to backend
-    alert('Draft saved successfully! Admin can review and update status.');
+    
+    if (onDraftSaved) {
+      onDraftSaved(draftData);
+    }
   };
 
   return (
@@ -129,12 +216,13 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="projectName">Project Name</Label>
+            <Label htmlFor="projectName">Project Name *</Label>
             <Input
               id="projectName"
               value={formData.projectName}
               onChange={(e) => handleInputChange('projectName', e.target.value)}
               placeholder="e.g., Cloud 9"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -501,7 +589,6 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         </CardContent>
       </Card>
 
-      {/* Payout and Contact */}
       <Card>
         <CardHeader>
           <CardTitle>Payout and Contact</CardTitle>

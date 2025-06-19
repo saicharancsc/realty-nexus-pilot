@@ -1,44 +1,119 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Edit, LogOut, Building2, BarChart3, Menu, X } from 'lucide-react';
+import { FileText, Edit, LogOut, Building2, BarChart3, Menu, X, FilePlus } from 'lucide-react';
 import { ProjectForm } from '@/components/ProjectForm';
 import { ShortFormOnboarding } from '@/components/ShortFormOnboarding';
 import { AgentReports } from '@/components/AgentReports';
+import { DraftsSection } from '@/components/DraftsSection';
 
 interface AgentDashboardProps {
   agentData: any;
   onLogout: () => void;
 }
 
-const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) => {
-  const [selectedOption, setSelectedOption] = useState<'selection' | 'full' | 'short' | 'reports'>('selection');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+interface DraftData {
+  id: string;
+  projectName: string;
+  builderName: string;
+  createdDate: string;
+  status: 'draft' | 'submitted';
+  formData: any;
+}
 
-  const handleOptionSelect = (option: 'full' | 'short' | 'reports') => {
+const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) => {
+  const [selectedOption, setSelectedOption] = useState<'selection' | 'full' | 'short' | 'reports' | 'drafts'>('selection');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [drafts, setDrafts] = useState<DraftData[]>([]);
+  const [editingDraft, setEditingDraft] = useState<DraftData | null>(null);
+
+  // Load drafts from localStorage on component mount
+  useEffect(() => {
+    const savedDrafts = localStorage.getItem('agentDrafts');
+    if (savedDrafts) {
+      setDrafts(JSON.parse(savedDrafts));
+    }
+  }, []);
+
+  // Save drafts to localStorage whenever drafts change
+  useEffect(() => {
+    localStorage.setItem('agentDrafts', JSON.stringify(drafts));
+  }, [drafts]);
+
+  const handleOptionSelect = (option: 'full' | 'short' | 'reports' | 'drafts') => {
     setSelectedOption(option);
-    setSidebarOpen(false); // Close sidebar on mobile when option is selected
+    setSidebarOpen(false);
+    setEditingDraft(null); // Clear editing draft when switching sections
   };
 
   const handleBackToSelection = () => {
     setSelectedOption('selection');
     setSidebarOpen(false);
+    setEditingDraft(null);
+  };
+
+  const handleDraftSaved = (draftData: any) => {
+    const newDraft: DraftData = {
+      id: Date.now().toString(),
+      projectName: draftData.projectName || 'Untitled Project',
+      builderName: draftData.builderName || 'Unknown Builder',
+      createdDate: new Date().toLocaleDateString(),
+      status: 'draft',
+      formData: draftData
+    };
+
+    setDrafts(prev => [...prev, newDraft]);
+    
+    // Show success message and switch to drafts section
+    alert('Draft saved successfully! You can now view it in the Drafts section.');
+    setSelectedOption('drafts');
+  };
+
+  const handleEditDraft = (draft: DraftData) => {
+    setEditingDraft(draft);
+    setSelectedOption('full');
+  };
+
+  const handleDraftSubmission = (draftId: string) => {
+    setDrafts(prev => prev.filter(draft => draft.id !== draftId));
+    setEditingDraft(null);
+    setSelectedOption('selection');
+    alert('Project submitted successfully!');
   };
 
   const sidebarItems = [
     { id: 'selection', label: 'Dashboard', icon: Building2 },
+    { id: 'drafts', label: 'Drafts', icon: FilePlus },
     { id: 'reports', label: 'Reports', icon: BarChart3 },
   ];
 
   const renderContent = () => {
     switch (selectedOption) {
       case 'full':
-        return <ProjectForm />;
+        return (
+          <ProjectForm 
+            initialData={editingDraft?.formData} 
+            onSubmit={editingDraft ? () => handleDraftSubmission(editingDraft.id) : undefined}
+            isDraftMode={!!editingDraft}
+          />
+        );
       case 'short':
-        return <ShortFormOnboarding agentData={agentData} />;
+        return (
+          <ShortFormOnboarding 
+            agentData={agentData} 
+            onDraftSaved={handleDraftSaved}
+          />
+        );
       case 'reports':
         return <AgentReports agentData={agentData} />;
+      case 'drafts':
+        return (
+          <DraftsSection 
+            drafts={drafts}
+            onEditDraft={handleEditDraft}
+          />
+        );
       default:
         return (
           <div className="max-w-4xl mx-auto">
@@ -112,11 +187,13 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
   const getPageTitle = () => {
     switch (selectedOption) {
       case 'full':
-        return 'Full Onboarding Details';
+        return editingDraft ? 'Edit Draft - Full Onboarding' : 'Full Onboarding Details';
       case 'short':
         return 'Short-Form Onboarding (Draft Only)';
       case 'reports':
         return 'My Reports';
+      case 'drafts':
+        return 'My Drafts';
       default:
         return 'Agent Dashboard';
     }
@@ -182,6 +259,11 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
               >
                 <Icon className="w-5 h-5 mr-3" />
                 <span>{item.label}</span>
+                {item.id === 'drafts' && drafts.length > 0 && (
+                  <span className="ml-auto bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
+                    {drafts.length}
+                  </span>
+                )}
               </button>
             );
           })}
@@ -217,7 +299,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
                 <p className="text-sm text-gray-600">Agent: {agentData.name}</p>
               </div>
             </div>
-            {(selectedOption === 'full' || selectedOption === 'short' || selectedOption === 'reports') && (
+            {(selectedOption === 'full' || selectedOption === 'short' || selectedOption === 'reports' || selectedOption === 'drafts') && (
               <Button onClick={handleBackToSelection} variant="outline" size="sm">
                 Back to Dashboard
               </Button>

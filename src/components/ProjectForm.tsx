@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { ProjectBasics } from '@/components/forms/ProjectBasics';
 import { ConstructionSpecs } from '@/components/forms/ConstructionSpecs';
 import { UnitConfigurations } from '@/components/forms/UnitConfigurations';
@@ -16,8 +17,18 @@ interface FormData {
   secondary?: any;
 }
 
-export const ProjectForm = () => {
-  const [formData, setFormData] = useState<FormData>({});
+interface ProjectFormProps {
+  initialData?: any;
+  onSubmit?: () => void;
+  isDraftMode?: boolean;
+}
+
+export const ProjectForm: React.FC<ProjectFormProps> = ({ 
+  initialData, 
+  onSubmit, 
+  isDraftMode = false 
+}) => {
+  const [formData, setFormData] = useState<FormData>(initialData || {});
 
   const updateFormData = (section: string, data: any) => {
     setFormData(prev => ({
@@ -26,10 +37,38 @@ export const ProjectForm = () => {
     }));
   };
 
+  const handleSubmit = () => {
+    // Validate required fields
+    const requiredFields = ['projectName', 'builderName'];
+    const missingFields = requiredFields.filter(field => 
+      !formData.basics?.[field]?.trim()
+    );
+
+    if (missingFields.length > 0) {
+      alert(`Please fill in the following required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    console.log('Submitting form data:', formData);
+    
+    if (onSubmit) {
+      onSubmit();
+    } else {
+      alert('Project submitted successfully!');
+    }
+  };
+
   return (
     <Card className="w-full">
       <CardHeader className="px-4 py-3">
-        <CardTitle className="text-xl font-bold text-gray-800">New Project Registration</CardTitle>
+        <CardTitle className="text-xl font-bold text-gray-800">
+          {isDraftMode ? 'Complete Project Registration (From Draft)' : 'New Project Registration'}
+        </CardTitle>
+        {isDraftMode && (
+          <p className="text-sm text-gray-600">
+            This form has been pre-filled with data from your draft. Complete the remaining fields and submit.
+          </p>
+        )}
       </CardHeader>
       <CardContent className="px-2 sm:px-4">
         <Tabs defaultValue="basics" className="w-full">
@@ -86,6 +125,16 @@ export const ProjectForm = () => {
             />
           </TabsContent>
         </Tabs>
+
+        {/* Submit Button */}
+        <div className="flex justify-center mt-8 pt-4 border-t">
+          <Button 
+            onClick={handleSubmit}
+            className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
+          >
+            {isDraftMode ? 'Complete & Submit Project' : 'Submit Project'}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
