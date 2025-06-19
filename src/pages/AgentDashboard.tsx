@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,6 +52,14 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
     setEditingDraft(null);
   };
 
+  const handleToggleForms = () => {
+    if (selectedOption === 'full') {
+      setSelectedOption('short');
+    } else if (selectedOption === 'short') {
+      setSelectedOption('full');
+    }
+  };
+
   const handleDraftSaved = (draftData: any) => {
     const newDraft: DraftData = {
       id: Date.now().toString(),
@@ -92,18 +99,44 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
     switch (selectedOption) {
       case 'full':
         return (
-          <ProjectForm 
-            initialData={editingDraft?.formData} 
-            onSubmit={editingDraft ? () => handleDraftSubmission(editingDraft.id) : undefined}
-            isDraftMode={!!editingDraft}
-          />
+          <div>
+            <div className="mb-4 flex justify-between items-center">
+              <Button
+                onClick={handleToggleForms}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Edit className="w-4 h-4" />
+                Switch to Short-Form
+              </Button>
+            </div>
+            <ProjectForm 
+              initialData={editingDraft?.formData} 
+              onSubmit={editingDraft ? () => handleDraftSubmission(editingDraft.id) : undefined}
+              isDraftMode={!!editingDraft}
+            />
+          </div>
         );
       case 'short':
         return (
-          <ShortFormOnboarding 
-            agentData={agentData} 
-            onDraftSaved={handleDraftSaved}
-          />
+          <div>
+            <div className="mb-4 flex justify-between items-center">
+              <Button
+                onClick={handleToggleForms}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Switch to Full-Form
+              </Button>
+            </div>
+            <ShortFormOnboarding 
+              agentData={agentData} 
+              onDraftSaved={handleDraftSaved}
+            />
+          </div>
         );
       case 'reports':
         return <AgentReports agentData={agentData} />;
