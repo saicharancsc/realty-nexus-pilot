@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -48,6 +49,10 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
   const unitTypes = ['1BHK', '2BHK', '2.5BHK', '3BHK', '3.5BHK', '4BHK', '4.5BHK', '5BHK', 'Villa', 'Villa Duplex', 'Villa Triplex'];
 
   const handleInputChange = (field: string, value: string) => {
+    // Ensure integer inputs for numeric fields
+    if (['numberOfFloors', 'flatsPerFloor', 'openSpace', 'carpetAreaPercent', 'ceilingHeight', 'floorChargerAmount', 'floorChargerAbove', 'commissionPercent', 'cutoffTheirPrice', 'cutoffRelaiPrice', 'payoutTimePeriod'].includes(field)) {
+      value = value.replace(/[^0-9]/g, '');
+    }
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
@@ -207,8 +212,8 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         powerBackup: shortFormData.powerBackup || '',
         groundVehicleMovement: shortFormData.groundVehicleMovement || '',
         wowFactorAmenity: shortFormData.wowFactorAmenity || '',
-        pocName: shortFormData.pocName || '',
-        pocNumber: shortFormData.pocNumber || '',
+        confirmationPersonName: shortFormData.pocName || '',
+        confirmationPersonContact: shortFormData.pocNumber || '',
         pocRole: shortFormData.pocRole || '',
         amenities: [],
         specifications: '',
@@ -296,7 +301,9 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
             <Label htmlFor="numberOfFloors">Number of Floors</Label>
             <Input
               id="numberOfFloors"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={formData.numberOfFloors}
               onChange={(e) => handleInputChange('numberOfFloors', e.target.value)}
               placeholder="e.g., 30"
@@ -306,7 +313,9 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
             <Label htmlFor="flatsPerFloor">Flats Per Floor</Label>
             <Input
               id="flatsPerFloor"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={formData.flatsPerFloor}
               onChange={(e) => handleInputChange('flatsPerFloor', e.target.value)}
               placeholder="e.g., 10"
@@ -325,7 +334,9 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
             <Label htmlFor="openSpace">Open Space (%)</Label>
             <Input
               id="openSpace"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={formData.openSpace}
               onChange={(e) => handleInputChange('openSpace', e.target.value)}
               placeholder="e.g., 70"
@@ -335,7 +346,9 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
             <Label htmlFor="carpetAreaPercent">Carpet Area %</Label>
             <Input
               id="carpetAreaPercent"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={formData.carpetAreaPercent}
               onChange={(e) => handleInputChange('carpetAreaPercent', e.target.value)}
               placeholder="e.g., 20"
@@ -345,7 +358,9 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
             <Label htmlFor="ceilingHeight">Ceiling Height (ft)</Label>
             <Input
               id="ceilingHeight"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={formData.ceilingHeight}
               onChange={(e) => handleInputChange('ceilingHeight', e.target.value)}
               placeholder="e.g., 10"
@@ -532,10 +547,12 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
                         {sizes.map((sizeObj: any, index: number) => (
                           <div key={index} className="flex items-center gap-2">
                             <Input
-                              type="number"
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
                               placeholder={`e.g., ${index === 0 ? '1500' : index === 1 ? '1650' : index === 2 ? '1800' : '2000'}`}
                               value={sizeObj.size}
-                              onChange={(e) => updateSizeVariant(unitType, index, e.target.value)}
+                              onChange={(e) => updateSizeVariant(unitType, index, e.target.value.replace(/[^0-9]/g, ''))}
                               className="flex-1"
                             />
                             {sizes.length > 1 && (
@@ -569,10 +586,12 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
                         {parkingSlots.map((slot: any, index: number) => (
                           <div key={index} className="flex items-center gap-2">
                             <Input
-                              type="number"
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
                               placeholder="Number of parking slots"
                               value={slot.slots}
-                              onChange={(e) => updateParkingSlot(unitType, index, e.target.value)}
+                              onChange={(e) => updateParkingSlot(unitType, index, e.target.value.replace(/[^0-9]/g, ''))}
                               className="flex-1"
                             />
                             {parkingSlots.length > 1 && (
@@ -676,7 +695,9 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
             <Label htmlFor="payoutTimePeriod">After Agreement of Sale, What is payout time period (days)</Label>
             <Input
               id="payoutTimePeriod"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={formData.payoutTimePeriod}
               onChange={(e) => handleInputChange('payoutTimePeriod', e.target.value)}
               placeholder="e.g., 30"

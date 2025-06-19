@@ -64,13 +64,16 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
     const currentUnits = data.unitTypes || {};
     const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
     
+    // Ensure only integers are allowed
+    const intValue = value.replace(/[^0-9]/g, '');
+    
     onUpdate({
       unitTypes: {
         ...currentUnits,
         [unitType]: {
           ...currentUnit,
           sizes: currentUnit.sizes?.map((sizeObj: any, i: number) => 
-            i === index ? { ...sizeObj, size: value } : sizeObj
+            i === index ? { ...sizeObj, size: intValue } : sizeObj
           ) || []
         }
       }
@@ -111,13 +114,16 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
     const currentUnits = data.unitTypes || {};
     const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
     
+    // Ensure only integers are allowed
+    const intValue = value.replace(/[^0-9]/g, '');
+    
     onUpdate({
       unitTypes: {
         ...currentUnits,
         [unitType]: {
           ...currentUnit,
           parkingSlots: currentUnit.parkingSlots?.map((slot: any, i: number) => 
-            i === index ? { ...slot, slots: value } : slot
+            i === index ? { ...slot, slots: intValue } : slot
           ) || []
         }
       }
@@ -151,7 +157,9 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
                       {(unitData.sizes || [{ size: '' }]).map((sizeObj: any, index: number) => (
                         <div key={index} className="flex items-center gap-2">
                           <Input
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             placeholder={`e.g., ${index === 0 ? '1500' : index === 1 ? '1650' : index === 2 ? '1800' : '2000'}`}
                             value={sizeObj.size || ''}
                             onChange={(e) => updateSizeVariant(unitType, index, e.target.value)}
@@ -188,7 +196,9 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
                       {(unitData.parkingSlots || [{ slots: '' }]).map((slot: any, index: number) => (
                         <div key={index} className="flex items-center gap-2">
                           <Input
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             placeholder="Number of parking slots"
                             value={slot.slots}
                             onChange={(e) => updateParkingSlot(unitType, index, e.target.value)}
