@@ -1,11 +1,11 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { FileText, Edit, LogOut, Building2, BarChart3, Menu, X, Save } from 'lucide-react';
+import { FileText, Edit, LogOut, Building2, BarChart3, Menu, X } from 'lucide-react';
 import { ProjectForm } from '@/components/ProjectForm';
 import { ShortFormOnboarding } from '@/components/ShortFormOnboarding';
 import { AgentReports } from '@/components/AgentReports';
-import { DraftsSection } from '@/components/DraftsSection';
 
 interface AgentDashboardProps {
   agentData: any;
@@ -13,45 +13,21 @@ interface AgentDashboardProps {
 }
 
 const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) => {
-  const [selectedOption, setSelectedOption] = useState<'selection' | 'full' | 'short' | 'reports' | 'drafts'>('selection');
+  const [selectedOption, setSelectedOption] = useState<'selection' | 'full' | 'short' | 'reports'>('selection');
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [draftData, setDraftData] = useState<any>(null);
 
-  const handleOptionSelect = (option: 'full' | 'short' | 'reports' | 'drafts') => {
+  const handleOptionSelect = (option: 'full' | 'short' | 'reports') => {
     setSelectedOption(option);
-    setSidebarOpen(false);
+    setSidebarOpen(false); // Close sidebar on mobile when option is selected
   };
 
   const handleBackToSelection = () => {
     setSelectedOption('selection');
     setSidebarOpen(false);
-    setDraftData(null);
-  };
-
-  const handleDraftSaved = (data: any) => {
-    // Store draft data and navigate to drafts section
-    const draftEntry = {
-      id: Date.now(),
-      ...data,
-      createdAt: new Date().toISOString(),
-      status: 'draft'
-    };
-    
-    // In a real app, this would be stored in a database or state management
-    localStorage.setItem(`draft_${draftEntry.id}`, JSON.stringify(draftEntry));
-    
-    console.log('Draft saved:', draftEntry);
-    setSelectedOption('drafts');
-  };
-
-  const handleEditDraft = (draft: any) => {
-    setDraftData(draft);
-    setSelectedOption('full');
   };
 
   const sidebarItems = [
     { id: 'selection', label: 'Dashboard', icon: Building2 },
-    { id: 'drafts', label: 'Drafts', icon: Save },
     { id: 'reports', label: 'Reports', icon: BarChart3 },
   ];
 
@@ -60,11 +36,9 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
       case 'full':
         return <ProjectForm />;
       case 'short':
-        return <ShortFormOnboarding agentData={agentData} onDraftSaved={handleDraftSaved} />;
+        return <ShortFormOnboarding agentData={agentData} />;
       case 'reports':
         return <AgentReports agentData={agentData} />;
-      case 'drafts':
-        return <DraftsSection agentData={agentData} onEditDraft={handleEditDraft} />;
       default:
         return (
           <div className="max-w-4xl mx-auto">
@@ -143,8 +117,6 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
         return 'Short-Form Onboarding (Draft Only)';
       case 'reports':
         return 'My Reports';
-      case 'drafts':
-        return 'My Drafts';
       default:
         return 'Agent Dashboard';
     }
@@ -245,7 +217,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
                 <p className="text-sm text-gray-600">Agent: {agentData.name}</p>
               </div>
             </div>
-            {(selectedOption === 'full' || selectedOption === 'short' || selectedOption === 'reports' || selectedOption === 'drafts') && (
+            {(selectedOption === 'full' || selectedOption === 'short' || selectedOption === 'reports') && (
               <Button onClick={handleBackToSelection} variant="outline" size="sm">
                 Back to Dashboard
               </Button>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -10,10 +11,9 @@ import { Plus, Trash2 } from 'lucide-react';
 
 interface ShortFormOnboardingProps {
   agentData: any;
-  onDraftSaved: (data: any) => void;
 }
 
-export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentData, onDraftSaved }) => {
+export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentData }) => {
   const [formData, setFormData] = useState<any>({
     projectName: '',
     builderName: '',
@@ -116,7 +116,8 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
       formType: 'short-form'
     };
     console.log('Saving draft:', draftData);
-    onDraftSaved(draftData);
+    // In real app, this would save to backend
+    alert('Draft saved successfully! Admin can review and update status.');
   };
 
   return (
