@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -60,7 +59,49 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         [unitType]: {
           ...prev.unitConfigurations[unitType],
           enabled,
+          sizes: enabled ? (prev.unitConfigurations[unitType]?.sizes || [{ size: '' }]) : [],
           parkingSlots: enabled ? (prev.unitConfigurations[unitType]?.parkingSlots || [{ slots: '' }]) : []
+        }
+      }
+    }));
+  };
+
+  const addSizeVariant = (unitType: string) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      unitConfigurations: {
+        ...prev.unitConfigurations,
+        [unitType]: {
+          ...prev.unitConfigurations[unitType],
+          sizes: [...(prev.unitConfigurations[unitType]?.sizes || []), { size: '' }]
+        }
+      }
+    }));
+  };
+
+  const removeSizeVariant = (unitType: string, index: number) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      unitConfigurations: {
+        ...prev.unitConfigurations,
+        [unitType]: {
+          ...prev.unitConfigurations[unitType],
+          sizes: prev.unitConfigurations[unitType]?.sizes.filter((_: any, i: number) => i !== index) || []
+        }
+      }
+    }));
+  };
+
+  const updateSizeVariant = (unitType: string, index: number, value: string) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      unitConfigurations: {
+        ...prev.unitConfigurations,
+        [unitType]: {
+          ...prev.unitConfigurations[unitType],
+          sizes: prev.unitConfigurations[unitType]?.sizes.map((sizeObj: any, i: number) => 
+            i === index ? { ...sizeObj, size: value } : sizeObj
+          ) || []
         }
       }
     }));
@@ -108,20 +149,19 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
   };
 
   const convertToFullFormData = (shortFormData: any) => {
-    // Convert short-form data to full-form structure
+    // Convert short-form data to full-form structure ensuring all fields are properly mapped
     return {
       basics: {
-        projectName: shortFormData.projectName,
-        builderName: shortFormData.builderName,
-        reraNumber: shortFormData.reraNumber,
-        projectType: shortFormData.projectType,
-        numberOfFloors: shortFormData.numberOfFloors,
-        flatsPerFloor: shortFormData.flatsPerFloor,
-        possessionDate: shortFormData.possessionDate,
-        openSpace: shortFormData.openSpace,
-        carpetAreaPercent: shortFormData.carpetAreaPercent,
-        ceilingHeight: shortFormData.ceilingHeight,
-        // Leave other basic fields empty for full form
+        projectName: shortFormData.projectName || '',
+        builderName: shortFormData.builderName || '',
+        reraNumber: shortFormData.reraNumber || '',
+        projectType: shortFormData.projectType || '',
+        numberOfFloors: shortFormData.numberOfFloors || '',
+        flatsPerFloor: shortFormData.flatsPerFloor || '',
+        possessionDate: shortFormData.possessionDate || '',
+        openSpace: shortFormData.openSpace || '',
+        carpetAreaPercent: shortFormData.carpetAreaPercent || '',
+        ceilingHeight: shortFormData.ceilingHeight || '',
         projectAddress: '',
         landmark: '',
         pincode: '',
@@ -133,7 +173,6 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         commercialSpace: '',
       },
       construction: {
-        // Leave construction fields empty for full form
         structureType: '',
         constructionQuality: '',
         floorPlan: '',
@@ -144,16 +183,14 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         commonArea: '',
       },
       units: {
-        unitTypes: shortFormData.unitConfigurations,
-        // Leave other unit fields empty
+        unitTypes: shortFormData.unitConfigurations || {},
       },
       financial: {
-        commissionType: shortFormData.commissionType,
-        commissionPercent: shortFormData.commissionPercent,
-        cutoffTheirPrice: shortFormData.cutoffTheirPrice,
-        cutoffRelaiPrice: shortFormData.cutoffRelaiPrice,
-        payoutTimePeriod: shortFormData.payoutTimePeriod,
-        // Leave other financial fields empty
+        commissionType: shortFormData.commissionType || '',
+        commissionPercent: shortFormData.commissionPercent || '',
+        cutoffTheirPrice: shortFormData.cutoffTheirPrice || '',
+        cutoffRelaiPrice: shortFormData.cutoffRelaiPrice || '',
+        payoutTimePeriod: shortFormData.payoutTimePeriod || '',
         basePrice: '',
         totalPrice: '',
         registrationCharges: '',
@@ -161,19 +198,18 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         otherCharges: '',
       },
       secondary: {
-        floorCharger: shortFormData.floorCharger,
-        floorChargerAmount: shortFormData.floorChargerAmount,
-        floorChargerAbove: shortFormData.floorChargerAbove,
-        facingCharges: shortFormData.facingCharges,
-        plc: shortFormData.plc,
-        plcConditions: shortFormData.plcConditions,
-        powerBackup: shortFormData.powerBackup,
-        groundVehicleMovement: shortFormData.groundVehicleMovement,
-        wowFactorAmenity: shortFormData.wowFactorAmenity,
-        pocName: shortFormData.pocName,
-        pocNumber: shortFormData.pocNumber,
-        pocRole: shortFormData.pocRole,
-        // Leave other secondary fields empty
+        floorCharger: shortFormData.floorCharger || '',
+        floorChargerAmount: shortFormData.floorChargerAmount || '',
+        floorChargerAbove: shortFormData.floorChargerAbove || '',
+        facingCharges: shortFormData.facingCharges || '',
+        plc: shortFormData.plc || '',
+        plcConditions: shortFormData.plcConditions || '',
+        powerBackup: shortFormData.powerBackup || '',
+        groundVehicleMovement: shortFormData.groundVehicleMovement || '',
+        wowFactorAmenity: shortFormData.wowFactorAmenity || '',
+        pocName: shortFormData.pocName || '',
+        pocNumber: shortFormData.pocNumber || '',
+        pocRole: shortFormData.pocRole || '',
         amenities: [],
         specifications: '',
         approvals: '',
@@ -197,7 +233,7 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
       submittedDate: new Date().toISOString().split('T')[0],
       status: 'draft',
       formType: 'converted-from-short-form',
-      originalShortFormData: formData // Keep original data for reference
+      originalShortFormData: formData
     };
 
     console.log('Saving draft:', draftData);
@@ -472,7 +508,8 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
         <CardContent className="space-y-4">
           {unitTypes.map((unitType) => {
             const isEnabled = formData.unitConfigurations[unitType]?.enabled || false;
-            const parkingSlots = formData.unitConfigurations[unitType]?.parkingSlots || [];
+            const sizes = formData.unitConfigurations[unitType]?.sizes || [{ size: '' }];
+            const parkingSlots = formData.unitConfigurations[unitType]?.parkingSlots || [{ slots: '' }];
 
             return (
               <div key={unitType} className="border rounded-lg p-4">
@@ -488,39 +525,80 @@ export const ShortFormOnboarding: React.FC<ShortFormOnboardingProps> = ({ agentD
                 </div>
 
                 {isEnabled && (
-                  <div className="space-y-3">
-                    <Label>Parking Slots Configuration</Label>
-                    {parkingSlots.map((slot: any, index: number) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          placeholder="Number of parking slots"
-                          value={slot.slots}
-                          onChange={(e) => updateParkingSlot(unitType, index, e.target.value)}
-                          className="flex-1"
-                        />
-                        {parkingSlots.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => removeParkingSlot(unitType, index)}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        )}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                      <Label className="font-semibold text-gray-700">Size Variants (sqft)</Label>
+                      <div className="space-y-3 mt-3">
+                        {sizes.map((sizeObj: any, index: number) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              placeholder={`e.g., ${index === 0 ? '1500' : index === 1 ? '1650' : index === 2 ? '1800' : '2000'}`}
+                              value={sizeObj.size}
+                              onChange={(e) => updateSizeVariant(unitType, index, e.target.value)}
+                              className="flex-1"
+                            />
+                            {sizes.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => removeSizeVariant(unitType, index)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addSizeVariant(unitType)}
+                          className="flex items-center gap-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Size Variant
+                        </Button>
                       </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => addParkingSlot(unitType)}
-                      className="flex items-center gap-2"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Parking Option
-                    </Button>
+                    </div>
+
+                    <div>
+                      <Label className="font-semibold text-gray-700">Parking Slots Configuration</Label>
+                      <div className="space-y-3 mt-3">
+                        {parkingSlots.map((slot: any, index: number) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              placeholder="Number of parking slots"
+                              value={slot.slots}
+                              onChange={(e) => updateParkingSlot(unitType, index, e.target.value)}
+                              className="flex-1"
+                            />
+                            {parkingSlots.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => removeParkingSlot(unitType, index)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addParkingSlot(unitType)}
+                          className="flex items-center gap-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Parking Option
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

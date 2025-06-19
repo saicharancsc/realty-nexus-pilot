@@ -23,25 +23,55 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
         [unitType]: {
           ...currentUnits[unitType],
           enabled: checked,
-          sizes: currentUnits[unitType]?.sizes || ['', '', '', ''],
+          sizes: checked ? (currentUnits[unitType]?.sizes || [{ size: '' }]) : [],
           parkingSlots: checked ? (currentUnits[unitType]?.parkingSlots || [{ slots: '' }]) : []
         }
       }
     });
   };
 
-  const handleSizeChange = (unitType: string, index: number, value: string) => {
+  const addSizeVariant = (unitType: string) => {
     const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
-    const newSizes = [...currentUnit.sizes];
-    newSizes[index] = value;
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
     
     onUpdate({
       unitTypes: {
         ...currentUnits,
         [unitType]: {
           ...currentUnit,
-          sizes: newSizes
+          sizes: [...(currentUnit.sizes || []), { size: '' }]
+        }
+      }
+    });
+  };
+
+  const removeSizeVariant = (unitType: string, index: number) => {
+    const currentUnits = data.unitTypes || {};
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
+    
+    onUpdate({
+      unitTypes: {
+        ...currentUnits,
+        [unitType]: {
+          ...currentUnit,
+          sizes: currentUnit.sizes?.filter((_: any, i: number) => i !== index) || []
+        }
+      }
+    });
+  };
+
+  const updateSizeVariant = (unitType: string, index: number, value: string) => {
+    const currentUnits = data.unitTypes || {};
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
+    
+    onUpdate({
+      unitTypes: {
+        ...currentUnits,
+        [unitType]: {
+          ...currentUnit,
+          sizes: currentUnit.sizes?.map((sizeObj: any, i: number) => 
+            i === index ? { ...sizeObj, size: value } : sizeObj
+          ) || []
         }
       }
     });
@@ -49,7 +79,7 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
 
   const addParkingSlot = (unitType: string) => {
     const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
     
     onUpdate({
       unitTypes: {
@@ -64,7 +94,7 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
 
   const removeParkingSlot = (unitType: string, index: number) => {
     const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
     
     onUpdate({
       unitTypes: {
@@ -79,7 +109,7 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
 
   const updateParkingSlot = (unitType: string, index: number, value: string) => {
     const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
+    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
     
     onUpdate({
       unitTypes: {
@@ -97,7 +127,7 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
   return (
     <div className="space-y-6">
       {unitTypes.map((unitType) => {
-        const unitData = data.unitTypes?.[unitType] || { enabled: false, sizes: ['', '', '', ''], parkingSlots: [] };
+        const unitData = data.unitTypes?.[unitType] || { enabled: false, sizes: [{ size: '' }], parkingSlots: [{ slots: '' }] };
         
         return (
           <Card key={unitType}>
@@ -118,27 +148,44 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
                   <div>
                     <h4 className="font-semibold mb-3 text-gray-700">Size Variants (sqft)</h4>
                     <div className="space-y-3">
-                      {[1, 2, 3, 4].map((sizeIndex) => (
-                        <div key={sizeIndex} className="space-y-2">
-                          <Label htmlFor={`${unitType}-size-${sizeIndex}`}>
-                            Size {sizeIndex}
-                          </Label>
+                      {(unitData.sizes || [{ size: '' }]).map((sizeObj: any, index: number) => (
+                        <div key={index} className="flex items-center gap-2">
                           <Input
-                            id={`${unitType}-size-${sizeIndex}`}
                             type="number"
-                            placeholder={`e.g., ${sizeIndex === 1 ? '1500' : sizeIndex === 2 ? '1650' : sizeIndex === 3 ? '1800' : '2000'}`}
-                            value={unitData.sizes[sizeIndex - 1]}
-                            onChange={(e) => handleSizeChange(unitType, sizeIndex - 1, e.target.value)}
+                            placeholder={`e.g., ${index === 0 ? '1500' : index === 1 ? '1650' : index === 2 ? '1800' : '2000'}`}
+                            value={sizeObj.size || ''}
+                            onChange={(e) => updateSizeVariant(unitType, index, e.target.value)}
+                            className="flex-1"
                           />
+                          {(unitData.sizes || []).length > 1 && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => removeSizeVariant(unitType, index)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
                         </div>
                       ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addSizeVariant(unitType)}
+                        className="flex items-center gap-2"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add Size Variant
+                      </Button>
                     </div>
                   </div>
                   
                   <div>
                     <h4 className="font-semibold mb-3 text-gray-700">Parking Slots Configuration</h4>
                     <div className="space-y-3">
-                      {(unitData.parkingSlots || []).map((slot: any, index: number) => (
+                      {(unitData.parkingSlots || [{ slots: '' }]).map((slot: any, index: number) => (
                         <div key={index} className="flex items-center gap-2">
                           <Input
                             type="number"
