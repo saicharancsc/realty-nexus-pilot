@@ -19,7 +19,7 @@ interface DraftsSectionProps {
   onEditDraft: (draft: DraftData) => void;
 }
 
-export const DraftsSection: React.FC<DraftsSectionProps> = ({ drafts, onEditDraft }) => {
+export const DraftsSection: React.FC<DraftsSectionProps > = ({ drafts, onEditDraft }) => {
   if (drafts.length === 0) {
     return (
       <div className="max-w-4xl mx-auto">

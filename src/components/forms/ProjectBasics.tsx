@@ -78,6 +78,8 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
             <Input
               id="totalLandArea"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 10"
               value={data.totalLandArea || ''}
               onChange={(e) => handleInputChange('totalLandArea', e.target.value)}
@@ -89,6 +91,8 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
             <Input
               id="numberOfTowers"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 7"
               value={data.numberOfTowers || ''}
               onChange={(e) => handleInputChange('numberOfTowers', e.target.value)}
@@ -100,6 +104,8 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
             <Input
               id="numberOfFloors"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 30"
               value={data.numberOfFloors || ''}
               onChange={(e) => handleInputChange('numberOfFloors', e.target.value)}
@@ -111,6 +117,8 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
             <Input
               id="flatsPerFloor"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 10"
               value={data.flatsPerFloor || ''}
               onChange={(e) => handleInputChange('flatsPerFloor', e.target.value)}
@@ -122,6 +130,8 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
             <Input
               id="totalUnits"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 2100"
               value={data.totalUnits || ''}
               onChange={(e) => handleInputChange('totalUnits', e.target.value)}
@@ -133,6 +143,8 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
             <Input
               id="openSpace"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 70"
               value={data.openSpace || ''}
               onChange={(e) => handleInputChange('openSpace', e.target.value)}

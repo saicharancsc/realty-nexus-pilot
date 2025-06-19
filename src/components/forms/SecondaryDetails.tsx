@@ -28,6 +28,8 @@ export const SecondaryDetails: React.FC<SecondaryDetailsProps> = ({ data, onUpda
             <Input
               id="commissionPercentage"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 2.5"
               value={data.commissionPercentage || ''}
               onChange={(e) => handleInputChange('commissionPercentage', e.target.value)}
@@ -39,6 +41,8 @@ export const SecondaryDetails: React.FC<SecondaryDetailsProps> = ({ data, onUpda
             <Input
               id="builderPrice"
               type="number"
+             step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 8000"
               value={data.builderPrice || ''}
               onChange={(e) => handleInputChange('builderPrice', e.target.value)}
@@ -50,6 +54,8 @@ export const SecondaryDetails: React.FC<SecondaryDetailsProps> = ({ data, onUpda
             <Input
               id="relaiPrice"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 7500"
               value={data.relaiPrice || ''}
               onChange={(e) => handleInputChange('relaiPrice', e.target.value)}
@@ -61,6 +67,8 @@ export const SecondaryDetails: React.FC<SecondaryDetailsProps> = ({ data, onUpda
             <Input
               id="payoutPeriod"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 30"
               value={data.payoutPeriod || ''}
               onChange={(e) => handleInputChange('payoutPeriod', e.target.value)}
@@ -164,6 +172,8 @@ export const SecondaryDetails: React.FC<SecondaryDetailsProps> = ({ data, onUpda
             <Input
               id="acknowledgementTime"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 30"
               value={data.acknowledgementTime || ''}
               onChange={(e) => handleInputChange('acknowledgementTime', e.target.value)}
@@ -175,6 +185,8 @@ export const SecondaryDetails: React.FC<SecondaryDetailsProps> = ({ data, onUpda
             <Input
               id="leadValidity"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 90"
               value={data.leadValidity || ''}
               onChange={(e) => handleInputChange('leadValidity', e.target.value)}
@@ -220,6 +232,7 @@ export const SecondaryDetails: React.FC<SecondaryDetailsProps> = ({ data, onUpda
           </div>
         </CardContent>
       </Card>
+      
     </div>
   );
 };

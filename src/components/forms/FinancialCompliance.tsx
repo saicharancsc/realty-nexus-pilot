@@ -39,6 +39,8 @@ export const FinancialCompliance: React.FC<FinancialComplianceProps> = ({ data, 
             <Input
               id="carParkingCost"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 200000"
               value={data.carParkingCost || ''}
               onChange={(e) => handleInputChange('carParkingCost', e.target.value)}
@@ -94,14 +96,7 @@ export const FinancialCompliance: React.FC<FinancialComplianceProps> = ({ data, 
         </CardContent>
       </Card>
 
-      <div className="flex flex-col sm:flex-row gap-3 sm:justify-end pt-4 lg:pt-6">
-        <button className="px-4 lg:px-6 py-3 lg:py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm lg:text-base">
-          Save as Draft
-        </button>
-        <button className="px-4 lg:px-6 py-3 lg:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm lg:text-base">
-          Submit Project
-        </button>
-      </div>
+      
     </div>
   );
 };

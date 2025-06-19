@@ -1,14 +1,11 @@
 
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Calendar, Building2, FileText, X, ArrowLeft } from 'lucide-react';
-
-interface AgentReportsProps {
-  agentData: any;
-}
+import { Search, Calendar, Building2, FileText, ArrowLeft } from 'lucide-react';
 
 interface Submission {
   id: number;
@@ -34,87 +31,43 @@ interface Submission {
   };
 }
 
-export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
+export const AgentReports: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDate, setFilterDate] = useState('');
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [agentSubmissions, setAgentSubmissions] = useState<Submission[]>([]);
 
-  // Mock data for agent's submissions with detailed information
-  const agentSubmissions: Submission[] = [
-    {
-      id: 1,
-      projectName: 'Cloud 9 Residency',
-      builderName: 'Urban Rise',
-      submissionType: 'Full Onboarding',
-      status: 'submitted',
-      date: '2024-06-15',
-      time: '10:30 AM',
-      details: {
-        reraNumber: 'P024000001XX',
-        projectType: 'Gated',
-        floors: 30,
-        flatsPerFloor: 10,
-        possessionDate: 'July 2026',
-        openSpace: '70%',
-        carpetArea: '20%',
-        ceilingHeight: '10ft',
-        commission: '2.5%',
-        pocName: 'John Doe',
-        pocNumber: '+91 9876543210',
-        pocRole: 'Project Manager'
+  // FIX: Make data loading from localStorage robust to prevent crashes.
+  useEffect(() => {
+    try {
+      const storedData = localStorage.getItem('agentSubmissions');
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        // IMPORTANT: Verify that the parsed data is an array before setting state.
+        if (Array.isArray(parsedData)) {
+          setAgentSubmissions(parsedData);
+        } else {
+          // If data is not an array, log a warning and reset to an empty array.
+          console.warn('agentSubmissions in localStorage was not an array. Resetting.');
+          setAgentSubmissions([]);
+          localStorage.setItem('agentSubmissions', '[]');
+        }
       }
-    },
-    {
-      id: 2,
-      projectName: 'Green Valley Heights',
-      builderName: 'Metro Builders',
-      submissionType: 'Short-Form',
-      status: 'draft',
-      date: '2024-06-14',
-      time: '3:45 PM',
-      details: {
-        reraNumber: 'P024000002XX',
-        projectType: 'Semi-gated',
-        floors: 25,
-        flatsPerFloor: 8,
-        possessionDate: 'December 2025',
-        openSpace: '65%',
-        carpetArea: '22%',
-        ceilingHeight: '9.5ft',
-        commission: '3%',
-        pocName: 'Jane Smith',
-        pocNumber: '+91 9876543211',
-        pocRole: 'Sales Head'
-      }
-    },
-    {
-      id: 3,
-      projectName: 'Skyline Towers',
-      builderName: 'Prime Construction',
-      submissionType: 'Full Onboarding',
-      status: 'submitted',
-      date: '2024-06-13',
-      time: '11:15 AM',
-      details: {
-        reraNumber: 'P024000003XX',
-        projectType: 'Stand-alone',
-        floors: 40,
-        flatsPerFloor: 12,
-        possessionDate: 'March 2027',
-        openSpace: '75%',
-        carpetArea: '18%',
-        ceilingHeight: '11ft',
-        commission: '2%',
-        pocName: 'Mike Johnson',
-        pocNumber: '+91 9876543212',
-        pocRole: 'Director'
-      }
+    } catch (error) {
+      // If JSON.parse fails, the data is corrupt. Log the error and reset.
+      console.error('Failed to parse agentSubmissions from localStorage:', error);
+      setAgentSubmissions([]);
+      localStorage.setItem('agentSubmissions', '[]');
     }
-  ];
+  }, []);
 
   const filteredSubmissions = agentSubmissions.filter(submission => {
-    const matchesSearch = submission.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         submission.builderName.toLowerCase().includes(searchTerm.toLowerCase());
+    // This check prevents errors if a submission object is malformed.
+    const projectName = submission.projectName || '';
+    const builderName = submission.builderName || '';
+    
+    const matchesSearch = projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         builderName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDate = !filterDate || submission.date === filterDate;
     return matchesSearch && matchesDate;
   });
@@ -139,6 +92,10 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
     submitted: agentSubmissions.filter(s => s.status === 'submitted').length,
     drafts: agentSubmissions.filter(s => s.status === 'draft').length,
     thisWeek: agentSubmissions.filter(s => {
+      // Ensure date is valid before creating a Date object from it
+      if (!s.date || isNaN(new Date(s.date).getTime())) {
+        return false;
+      }
       const submissionDate = new Date(s.date);
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
@@ -271,7 +228,6 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
         </div>
       </div>
 
-      {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -284,7 +240,6 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -296,7 +251,6 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -308,7 +262,6 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
             </div>
           </CardContent>
         </Card>
-
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -322,7 +275,6 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
         </Card>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
@@ -341,7 +293,6 @@ export const AgentReports: React.FC<AgentReportsProps> = ({ agentData }) => {
         />
       </div>
 
-      {/* Submissions List */}
       <Card>
         <CardHeader>
           <CardTitle>Your Submissions</CardTitle>

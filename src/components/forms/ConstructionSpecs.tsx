@@ -56,6 +56,8 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
             <Input
               id="carpetAreaPercent"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 20"
               value={data.carpetAreaPercent || ''}
               onChange={(e) => handleInputChange('carpetAreaPercent', e.target.value)}
@@ -67,6 +69,8 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
             <Input
               id="ceilingHeight"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 10"
               value={data.ceilingHeight || ''}
               onChange={(e) => handleInputChange('ceilingHeight', e.target.value)}
@@ -78,6 +82,8 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
             <Input
               id="pricePerSqft"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 7000"
               value={data.pricePerSqft || ''}
               onChange={(e) => handleInputChange('pricePerSqft', e.target.value)}
@@ -103,6 +109,8 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
             <Input
               id="passengerLifts"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 4"
               value={data.passengerLifts || ''}
               onChange={(e) => handleInputChange('passengerLifts', e.target.value)}
@@ -114,6 +122,8 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
             <Input
               id="serviceLifts"
               type="number"
+              step="any"
+              onWheel={(e) => e.currentTarget.blur()}
               placeholder="e.g., 2"
               value={data.serviceLifts || ''}
               onChange={(e) => handleInputChange('serviceLifts', e.target.value)}

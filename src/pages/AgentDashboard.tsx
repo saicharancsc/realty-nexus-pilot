@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -139,7 +141,8 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
           </div>
         );
       case 'reports':
-        return <AgentReports agentData={agentData} />;
+        // FIX: Removed the `agentData` prop as it's no longer needed by AgentReports
+        return <AgentReports />;
       case 'drafts':
         return (
           <DraftsSection 
