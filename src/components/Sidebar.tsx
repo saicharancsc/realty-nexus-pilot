@@ -15,15 +15,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange
   ];
 
   return (
-    <div className="w-full h-full bg-white shadow-lg border-r border-gray-200 flex flex-col">
-      <div className="p-4 lg:p-6 border-b border-gray-200">
+    <div className="w-full h-full bg-background shadow-lg border-r border-border flex flex-col">
+      <div className="p-4 lg:p-6 border-b border-border">
         <div className="flex items-center space-x-3">
           <img 
             src="/lovable-uploads/95d8528a-6c65-46f3-ad47-07945b76d0be.png" 
             alt="Relai Logo" 
             className="h-8 w-auto"
           />
-          <h2 className="text-lg lg:text-xl font-bold text-gray-800">Real Estate CRM</h2>
+          <h2 className="text-lg lg:text-xl font-bold text-foreground">Real Estate CRM</h2>
         </div>
       </div>
       
@@ -36,8 +36,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange
               onClick={() => onSectionChange(item.id)}
               className={`w-full flex items-center px-4 lg:px-6 py-4 lg:py-3 text-left transition-colors ${
                 activeSection === item.id
-                  ? 'bg-blue-50 text-[#1752ff] border-r-2 border-[#1752ff]'
-                  : 'text-gray-600 hover:bg-gray-50'
+                  ? 'bg-accent text-accent-foreground border-r-2 border-primary'
+                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               }`}
             >
               <Icon className="w-5 h-5 mr-3" />
@@ -48,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeSection, onSectionChange
       </nav>
 
       <div className="p-4 lg:p-6">
-        <button className="w-full flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+        <button className="w-full flex items-center px-4 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors">
           <LogOut className="w-5 h-5 mr-3" />
           <span className="text-sm lg:text-base">Logout</span>
         </button>
