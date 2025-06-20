@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -188,8 +189,8 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
 
               <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
                 <CardHeader className="text-center pb-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
-                    <Edit className="w-8 h-8 text-green-600" />
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+                    <Edit className="w-8 h-8 text-blue-600" />
                   </div>
                   <CardTitle className="text-xl">Onboarding Details (Short-Form)</CardTitle>
                 </CardHeader>
@@ -205,7 +206,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
                   </ul>
                   <Button 
                     onClick={() => handleOptionSelect('short')}
-                    className="w-full bg-green-600 hover:bg-green-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700"
                   >
                     Start Short-Form
                   </Button>
@@ -257,7 +258,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <Building2 className="w-8 h-8 text-green-600" />
+              <Building2 className="w-8 h-8 text-[#1752ff]" />
               <div>
                 <h2 className="text-lg font-bold text-gray-800">Agent Portal</h2>
                 <p className="text-sm text-gray-600">{agentData.name}</p>
@@ -286,14 +287,14 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
                 onClick={() => item.id === 'selection' ? handleBackToSelection() : handleOptionSelect(item.id as any)}
                 className={`w-full flex items-center px-6 py-3 text-left transition-colors ${
                   isActive
-                    ? 'bg-green-50 text-green-600 border-r-2 border-green-600'
+                    ? 'bg-[#1752ff]/10 text-[#1752ff] border-r-2 border-[#1752ff]'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 <Icon className="w-5 h-5 mr-3" />
                 <span>{item.label}</span>
                 {item.id === 'drafts' && drafts.length > 0 && (
-                  <span className="ml-auto bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs">
+                  <span className="ml-auto bg-[#1752ff]/10 text-[#1752ff] px-2 py-1 rounded-full text-xs">
                     {drafts.length}
                   </span>
                 )}
