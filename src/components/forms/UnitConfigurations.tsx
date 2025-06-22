@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,125 +14,56 @@ interface UnitConfigurationsProps {
 export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, onUpdate }) => {
   const unitTypes = ['1BHK', '2BHK', '2.5BHK', '3BHK', '3.5BHK', '4BHK', '4.5BHK', '5BHK', 'Villa', 'Villa Duplex', 'Villa Triplex'];
   
+  const updateUnitData = (unitType: string, newUnitData: any) => {
+    onUpdate({
+      unitTypes: {
+        ...(data.unitTypes || {}),
+        [unitType]: newUnitData,
+      },
+    });
+  };
+
   const handleUnitTypeToggle = (unitType: string, checked: boolean) => {
-    const currentUnits = data.unitTypes || {};
-    onUpdate({
-      unitTypes: {
-        ...currentUnits,
-        [unitType]: {
-          ...currentUnits[unitType],
-          enabled: checked,
-          sizes: checked ? (currentUnits[unitType]?.sizes || [{ size: '' }]) : [],
-          parkingSlots: checked ? (currentUnits[unitType]?.parkingSlots || [{ slots: '' }]) : []
-        }
-      }
+    const currentUnit = data.unitTypes?.[unitType] || {};
+    updateUnitData(unitType, {
+      ...currentUnit,
+      enabled: checked,
+      // Initialize with one empty variant row if enabled for the first time
+      variants: checked ? (currentUnit.variants || [{ size: '', parkingSlots: '' }]) : [],
     });
   };
 
-  const addSizeVariant = (unitType: string) => {
-    const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
-    
-    onUpdate({
-      unitTypes: {
-        ...currentUnits,
-        [unitType]: {
-          ...currentUnit,
-          sizes: [...(currentUnit.sizes || []), { size: '' }]
-        }
-      }
+  const addVariant = (unitType: string) => {
+    const currentUnit = data.unitTypes?.[unitType] || { variants: [] };
+    updateUnitData(unitType, {
+      ...currentUnit,
+      variants: [...(currentUnit.variants || []), { size: '', parkingSlots: '' }],
     });
   };
 
-  const removeSizeVariant = (unitType: string, index: number) => {
-    const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
-    
-    onUpdate({
-      unitTypes: {
-        ...currentUnits,
-        [unitType]: {
-          ...currentUnit,
-          sizes: currentUnit.sizes?.filter((_: any, i: number) => i !== index) || []
-        }
-      }
+  const removeVariant = (unitType: string, index: number) => {
+    const currentUnit = data.unitTypes?.[unitType] || { variants: [] };
+    updateUnitData(unitType, {
+      ...currentUnit,
+      variants: currentUnit.variants?.filter((_: any, i: number) => i !== index) || [],
     });
   };
 
-  const updateSizeVariant = (unitType: string, index: number, value: string) => {
-    const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
+  const updateVariant = (unitType: string, index: number, field: 'size' | 'parkingSlots', value: string) => {
+    const currentUnit = data.unitTypes?.[unitType] || { variants: [] };
+    const intValue = value.replace(/[^0-9]/g, ''); // Ensure only numbers are stored
     
-    // Ensure only integers are allowed
-    const intValue = value.replace(/[^0-9]/g, '');
-    
-    onUpdate({
-      unitTypes: {
-        ...currentUnits,
-        [unitType]: {
-          ...currentUnit,
-          sizes: currentUnit.sizes?.map((sizeObj: any, i: number) => 
-            i === index ? { ...sizeObj, size: intValue } : sizeObj
-          ) || []
-        }
-      }
-    });
-  };
+    const updatedVariants = currentUnit.variants?.map((variant: any, i: number) =>
+      i === index ? { ...variant, [field]: intValue } : variant
+    ) || [];
 
-  const addParkingSlot = (unitType: string) => {
-    const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
-    
-    onUpdate({
-      unitTypes: {
-        ...currentUnits,
-        [unitType]: {
-          ...currentUnit,
-          parkingSlots: [...(currentUnit.parkingSlots || []), { slots: '' }]
-        }
-      }
-    });
-  };
-
-  const removeParkingSlot = (unitType: string, index: number) => {
-    const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
-    
-    onUpdate({
-      unitTypes: {
-        ...currentUnits,
-        [unitType]: {
-          ...currentUnit,
-          parkingSlots: currentUnit.parkingSlots?.filter((_: any, i: number) => i !== index) || []
-        }
-      }
-    });
-  };
-
-  const updateParkingSlot = (unitType: string, index: number, value: string) => {
-    const currentUnits = data.unitTypes || {};
-    const currentUnit = currentUnits[unitType] || { enabled: false, sizes: [], parkingSlots: [] };
-    
-    // Ensure only integers are allowed
-    const intValue = value.replace(/[^0-9]/g, '');
-    
-    onUpdate({
-      unitTypes: {
-        ...currentUnits,
-        [unitType]: {
-          ...currentUnit,
-          parkingSlots: currentUnit.parkingSlots?.map((slot: any, i: number) => 
-            i === index ? { ...slot, slots: intValue } : slot
-          ) || []
-        }
-      }
-    });
+    updateUnitData(unitType, { ...currentUnit, variants: updatedVariants });
   };
 
   return (
     <div className="space-y-6">
       {unitTypes.map((unitType) => {
-        const unitData = data.unitTypes?.[unitType] || { enabled: false, sizes: [{ size: '' }], parkingSlots: [{ slots: '' }] };
+        const unitData = data.unitTypes?.[unitType] || { enabled: false, variants: [] };
         
         return (
           <Card key={unitType}>
@@ -144,91 +74,70 @@ export const UnitConfigurations: React.FC<UnitConfigurationsProps> = ({ data, on
                   checked={unitData.enabled}
                   onCheckedChange={(checked) => handleUnitTypeToggle(unitType, checked as boolean)}
                 />
-                <CardTitle className="text-lg">{unitType} Configuration</CardTitle>
+                <Label htmlFor={`unit-${unitType}`} className="text-lg font-medium cursor-pointer">{unitType} Configuration</Label>
               </div>
             </CardHeader>
             
             {unitData.enabled && (
               <CardContent>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-semibold mb-3 text-gray-700">Size Variants (sqft)</h4>
-                    <div className="space-y-3">
-                      {(unitData.sizes || [{ size: '' }]).map((sizeObj: any, index: number) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            placeholder={`e.g., ${index === 0 ? '1500' : index === 1 ? '1650' : index === 2 ? '1800' : '2000'}`}
-                            value={sizeObj.size || ''}
-                            onChange={(e) => updateSizeVariant(unitType, index, e.target.value)}
-                            className="flex-1"
-                          />
-                          {(unitData.sizes || []).length > 1 && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => removeSizeVariant(unitType, index)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => addSizeVariant(unitType)}
-                        className="flex items-center gap-2"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Size Variant
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold mb-3 text-gray-700">Parking Slots Configuration</h4>
-                    <div className="space-y-3">
-                      {(unitData.parkingSlots || [{ slots: '' }]).map((slot: any, index: number) => (
-                        <div key={index} className="flex items-center gap-2">
-                          <Input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            placeholder="Number of parking slots"
-                            value={slot.slots}
-                            onChange={(e) => updateParkingSlot(unitType, index, e.target.value)}
-                            className="flex-1"
-                          />
-                          {(unitData.parkingSlots || []).length > 1 && (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              onClick={() => removeParkingSlot(unitType, index)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          )}
-                        </div>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => addParkingSlot(unitType)}
-                        className="flex items-center gap-2"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Parking Option
-                      </Button>
-                    </div>
-                  </div>
+                {/* Column Headers */}
+                <div className="grid grid-cols-[1fr_1fr_auto] gap-4 mb-2">
+                  <Label className="font-semibold text-gray-700">Size Variants (sqft)</Label>
+                  <Label className="font-semibold text-gray-700">Parking Slots</Label>
+                  {/* Empty div for alignment with delete button column */}
+                  <div></div>
                 </div>
+
+                {/* Dynamic Variant Rows */}
+                <div className="space-y-3">
+                  {(unitData.variants || []).map((variant: any, index: number) => (
+                    <div key={index} className="grid grid-cols-[1fr_1fr_auto] gap-4 items-center">
+                      {/* Column 1: Size Input */}
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="e.g., 1500"
+                        value={variant.size || ''}
+                        onChange={(e) => updateVariant(unitType, index, 'size', e.target.value)}
+                      />
+                      
+                      {/* Column 2: Parking Input */}
+                      <Input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="e.g., 1"
+                        value={variant.parkingSlots || ''}
+                        onChange={(e) => updateVariant(unitType, index, 'parkingSlots', e.target.value)}
+                      />
+                      
+                      {/* Column 3: Delete Button */}
+                      {(unitData.variants || []).length > 1 ? (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeVariant(unitType, index)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      ) : (
+                        // Add an empty div as a spacer to prevent layout shift when there's only one row
+                        <div className="w-10 h-10"></div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Single Add Button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => addVariant(unitType)}
+                  className="w-full mt-4 flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add
+                </Button>
               </CardContent>
             )}
           </Card>

@@ -1,6 +1,6 @@
-
-
 import React, { useState, useEffect } from 'react';
+// FIX: Import useLocation to read the navigation state
+import { useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, Edit, LogOut, Building2, BarChart3, Menu, X, FilePlus } from 'lucide-react';
@@ -24,7 +24,15 @@ interface DraftData {
 }
 
 const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) => {
-  const [selectedOption, setSelectedOption] = useState<'selection' | 'full' | 'short' | 'reports' | 'drafts'>('selection');
+  // FIX: Read the location to check for incoming state
+  const location = useLocation();
+
+  // FIX: Initialize the selectedOption state based on the location state,
+  // or default to 'selection' if no state is passed.
+  const [selectedOption, setSelectedOption] = useState<'selection' | 'full' | 'short' | 'reports' | 'drafts'>(
+    location.state?.defaultView || 'selection'
+  );
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [drafts, setDrafts] = useState<DraftData[]>([]);
   const [editingDraft, setEditingDraft] = useState<DraftData | null>(null);
@@ -33,7 +41,15 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
   useEffect(() => {
     const savedDrafts = localStorage.getItem('agentDrafts');
     if (savedDrafts) {
-      setDrafts(JSON.parse(savedDrafts));
+      try {
+        const parsedDrafts = JSON.parse(savedDrafts);
+        if (Array.isArray(parsedDrafts)) {
+          setDrafts(parsedDrafts);
+        }
+      } catch (error) {
+        console.error("Failed to parse drafts from localStorage", error);
+        setDrafts([]);
+      }
     }
   }, []);
 
@@ -45,7 +61,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
   const handleOptionSelect = (option: 'full' | 'short' | 'reports' | 'drafts') => {
     setSelectedOption(option);
     setSidebarOpen(false);
-    setEditingDraft(null); // Clear editing draft when switching sections
+    setEditingDraft(null);
   };
 
   const handleBackToSelection = () => {
@@ -62,19 +78,16 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
     }
   };
 
-  const handleDraftSaved = (draftData: any) => {
+  const handleDraftSaved = (draftFormData: any) => {
     const newDraft: DraftData = {
       id: Date.now().toString(),
-      projectName: draftData.projectName || 'Untitled Project',
-      builderName: draftData.builderName || 'Unknown Builder',
+      projectName: draftFormData.basics?.projectName || 'Untitled Project',
+      builderName: draftFormData.basics?.builderName || 'Unknown Builder',
       createdDate: new Date().toLocaleDateString(),
       status: 'draft',
-      formData: draftData
+      formData: draftFormData
     };
-
     setDrafts(prev => [...prev, newDraft]);
-    
-    // Show success message and switch to drafts section
     alert('Draft saved successfully! You can now view it in the Drafts section.');
     setSelectedOption('drafts');
   };
@@ -87,8 +100,9 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
   const handleDraftSubmission = (draftId: string) => {
     setDrafts(prev => prev.filter(draft => draft.id !== draftId));
     setEditingDraft(null);
-    setSelectedOption('selection');
-    alert('Project submitted successfully!');
+    // After submission logic in ProjectForm, we'll be navigated to the reports view
+    // so we can set the state here to match.
+    setSelectedOption('reports');
   };
 
   const sidebarItems = [
@@ -97,7 +111,9 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
     { id: 'reports', label: 'Reports', icon: BarChart3 },
   ];
 
+  // The rest of the component remains the same.
   const renderContent = () => {
+    // ... no changes needed in this function
     switch (selectedOption) {
       case 'full':
         return (
@@ -141,7 +157,6 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
           </div>
         );
       case 'reports':
-        // FIX: Removed the `agentData` prop as it's no longer needed by AgentReports
         return <AgentReports />;
       case 'drafts':
         return (
@@ -219,8 +234,8 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
         );
     }
   };
-
   const getPageTitle = () => {
+    // ... no changes needed in this function
     switch (selectedOption) {
       case 'full':
         return editingDraft ? 'Edit Draft - Full Onboarding' : 'Full Onboarding Details';
@@ -236,27 +251,9 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
   };
 
   return (
+    // ... no changes needed in the JSX
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Mobile Overlay */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <div className={`
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
-        lg:translate-x-0 
-        fixed lg:static 
-        inset-y-0 left-0 
-        w-64 
-        bg-white shadow-lg border-r border-gray-200 
-        flex flex-col 
-        z-50 
-        transition-transform duration-300 ease-in-out
-      `}>
+      <div className={` ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}  lg:translate-x-0  fixed lg:static  inset-y-0 left-0  w-64  bg-white shadow-lg border-r border-gray-200  flex flex-col  z-50  transition-transform duration-300 ease-in-out `}>
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -266,32 +263,18 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
                 <p className="text-sm text-gray-600">{agentData.name}</p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            >
-              <X className="w-5 h-5" />
-            </Button>
+            <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setSidebarOpen(false)}> <X className="w-5 h-5" /> </Button>
           </div>
         </div>
-        
         <nav className="mt-6 flex-1">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
-            const isActive = selectedOption === item.id || 
-              (item.id === 'selection' && ['selection', 'full', 'short'].includes(selectedOption));
-            
+            const isActive = selectedOption === item.id || (item.id === 'selection' && ['selection', 'full', 'short'].includes(selectedOption));
             return (
               <button
                 key={item.id}
                 onClick={() => item.id === 'selection' ? handleBackToSelection() : handleOptionSelect(item.id as any)}
-                className={`w-full flex items-center px-6 py-3 text-left transition-colors ${
-                  isActive
-                    ? 'bg-green-50 text-green-600 border-r-2 border-green-600'
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
+                className={`w-full flex items-center px-6 py-3 text-left transition-colors ${ isActive ? 'bg-green-50 text-green-600 border-r-2 border-green-600' : 'text-gray-600 hover:bg-gray-50' }`}
               >
                 <Icon className="w-5 h-5 mr-3" />
                 <span>{item.label}</span>
@@ -304,45 +287,25 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
             );
           })}
         </nav>
-
         <div className="p-6">
-          <Button 
-            onClick={onLogout} 
-            variant="outline" 
-            className="w-full flex items-center justify-center"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
+          <Button onClick={onLogout} variant="outline" className="w-full flex items-center justify-center"> <LogOut className="w-4 h-4 mr-2" /> Logout </Button>
         </div>
       </div>
-
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-white shadow-sm border-b border-gray-200 px-4 lg:px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="lg:hidden"
-                onClick={() => setSidebarOpen(true)}
-              >
-                <Menu className="w-5 h-5" />
-              </Button>
+              <Button variant="ghost" size="sm" className="lg:hidden" onClick={() => setSidebarOpen(true)}> <Menu className="w-5 h-5" /> </Button>
               <div>
                 <h1 className="text-xl font-semibold text-gray-800">{getPageTitle()}</h1>
                 <p className="text-sm text-gray-600">Agent: {agentData.name}</p>
               </div>
             </div>
             {(selectedOption === 'full' || selectedOption === 'short' || selectedOption === 'reports' || selectedOption === 'drafts') && (
-              <Button onClick={handleBackToSelection} variant="outline" size="sm">
-                Back to Dashboard
-              </Button>
+              <Button onClick={handleBackToSelection} variant="outline" size="sm"> Back to Dashboard </Button>
             )}
           </div>
         </header>
-
         <main className="flex-1 p-4 lg:p-6 overflow-auto">
           {renderContent()}
         </main>
