@@ -113,7 +113,9 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
     { id: 'reports', label: 'Reports', icon: BarChart3 },
   ];
 
+  // The rest of the component remains the same.
   const renderContent = () => {
+    // ... no changes needed in this function
     switch (selectedOption) {
       case 'full':
         return (
@@ -210,6 +212,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
   };
   
   const getPageTitle = () => {
+    // ... no changes needed in this function
     switch (selectedOption) {
       case 'full': return editingDraft ? 'Edit Draft - Full Onboarding' : 'Full Onboarding Details';
       case 'short': return 'Short-Form Onboarding (Draft Only)';
@@ -220,6 +223,7 @@ const AgentDashboard: React.FC<AgentDashboardProps> = ({ agentData, onLogout }) 
   };
 
   return (
+    // ... no changes needed in the JSX
     <div className="min-h-screen bg-gray-50 flex">
       <div className={` ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}  lg:translate-x-0  fixed lg:static  inset-y-0 left-0  w-64  bg-white shadow-lg border-r border-gray-200  flex flex-col  z-50  transition-transform duration-300 ease-in-out `}>
         <div className="p-6 border-b border-gray-200">
