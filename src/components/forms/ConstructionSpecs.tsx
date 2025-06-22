@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,19 +16,6 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
     onUpdate({ [field]: value });
   };
 
-  const handleAmenityChange = (amenity: string, checked: boolean) => {
-    const currentAmenities = data.amenities || [];
-    let updatedAmenities;
-    
-    if (checked) {
-      updatedAmenities = [...currentAmenities, amenity];
-    } else {
-      updatedAmenities = currentAmenities.filter((item: string) => item !== amenity);
-    }
-    
-    onUpdate({ amenities: updatedAmenities });
-  };
-
   const amenitiesList = [
     'Swimming Pool',
     'Gymnasium',
@@ -43,6 +29,31 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
     'Power Backup',
     'Rainwater Harvesting'
   ];
+
+  const handleAmenityChange = (amenity: string, checked: boolean) => {
+    const currentAmenities = data.amenities || [];
+    let updatedAmenities;
+    
+    if (checked) {
+      updatedAmenities = [...currentAmenities, amenity];
+    } else {
+      updatedAmenities = currentAmenities.filter((item: string) => item !== amenity);
+    }
+    
+    onUpdate({ amenities: updatedAmenities });
+  };
+
+  const handleSelectAllAmenities = (checked: boolean) => {
+    if (checked) {
+      onUpdate({ amenities: [...amenitiesList] });
+    } else {
+      onUpdate({ amenities: [] });
+    }
+  };
+
+  const selectedAmenitiesCount = data.amenities?.length || 0;
+  const allAmenitiesSelected = selectedAmenitiesCount === amenitiesList.length;
+  const someAmenitiesSelected = selectedAmenitiesCount > 0 && !allAmenitiesSelected;
 
   return (
     <div className="space-y-6">
@@ -92,7 +103,7 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
           
           <div className="space-y-2">
             <Label htmlFor="powerBackup">Power Backup</Label>
-            <Select onValueChange={(value) => handleInputChange('powerBackup', value)}>
+            <Select value={data.powerBackup || ''} onValueChange={(value) => handleInputChange('powerBackup', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select power backup" />
               </SelectTrigger>
@@ -139,7 +150,7 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="visitorParking">Visitor Parking</Label>
-            <Select onValueChange={(value) => handleInputChange('visitorParking', value)}>
+            <Select value={data.visitorParking || ''} onValueChange={(value) => handleInputChange('visitorParking', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select visitor parking availability" />
               </SelectTrigger>
@@ -152,6 +163,16 @@ export const ConstructionSpecs: React.FC<ConstructionSpecsProps> = ({ data, onUp
           
           <div className="space-y-3">
             <Label>Amenities</Label>
+            <div className="flex items-center space-x-3 p-2 border rounded-md">
+              <Checkbox
+                id="select-all-amenities"
+                checked={allAmenitiesSelected ? true : someAmenitiesSelected ? 'indeterminate' : false}
+                onCheckedChange={(checked) => handleSelectAllAmenities(checked as boolean)}
+              />
+              <Label htmlFor="select-all-amenities" className="font-medium cursor-pointer">
+                Select All
+              </Label>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {amenitiesList.map((amenity) => (
                 <div key={amenity} className="flex items-center space-x-2">

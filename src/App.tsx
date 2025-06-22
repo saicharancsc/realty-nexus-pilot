@@ -1,30 +1,55 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import AgentAuth from './pages/AgentAuth';
+import AgentDashboard from './pages/AgentDashboard';
+import AdminIndex from './pages/AdminIndex';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import AdminIndex from "./pages/AdminIndex";
-import AgentIndex from "./pages/AgentIndex";
-import NotFound from "./pages/NotFound";
+function App() {
+  // Initialize state by reading from localStorage to make the session persistent.
+  const [agentData, setAgentData] = useState(() => {
+    const savedAgent = localStorage.getItem('agentData');
+    return savedAgent ? JSON.parse(savedAgent) : null;
+  });
 
-const queryClient = new QueryClient();
+  const handleAuth = (data: any) => {
+    // Save the logged-in user's data to localStorage.
+    localStorage.setItem('agentData', JSON.stringify(data));
+    setAgentData(data);
+  };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/agent" replace />} />
-          <Route path="/admin" element={<AdminIndex />} />
-          <Route path="/agent" element={<AgentIndex />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  const handleLogout = () => {
+    // Remove the user's data from localStorage on logout.
+    localStorage.removeItem('agentData');
+    setAgentData(null);
+  };
+
+  return (
+    <Router>
+      <Routes>
+        {/* Default path redirects to login */}
+        <Route 
+          path="/" 
+          element={<Navigate to="/login" />} 
+        />
+        
+        {/* Login Route */}
+        <Route 
+          path="/login" 
+          element={!agentData ? <AgentAuth onAuth={handleAuth} /> : <Navigate to="/agent" />} 
+        />
+        
+        {/* Agent Dashboard Route (Protected) */}
+        <Route 
+          path="/agent" 
+          element={agentData ? <AgentDashboard agentData={agentData} onLogout={handleLogout} /> : <Navigate to="/login" />} 
+        />
+        
+        {/* Admin Route */}
+        <Route path="/admin" element={<AdminIndex />} />
+
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;

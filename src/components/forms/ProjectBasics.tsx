@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +32,16 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
           </div>
           
           <div className="space-y-2">
+            <Label htmlFor="projectLocation">Project Location</Label>
+            <Input
+              id="projectLocation"
+              placeholder="e.g., Gachibowli"
+              value={data.projectLocation || ''}
+              onChange={(e) => handleInputChange('projectLocation', e.target.value)}
+            />
+          </div>
+          
+          <div className="space-y-2">
             <Label htmlFor="builderName">Builder Name</Label>
             <Input
               id="builderName"
@@ -54,7 +63,8 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
           
           <div className="space-y-2">
             <Label htmlFor="projectType">Project Type</Label>
-            <Select onValueChange={(value) => handleInputChange('projectType', value)}>
+            {/* FIX: The 'value' prop was missing here. It's now added. */}
+            <Select onValueChange={(value) => handleInputChange('projectType', value)} value={data.projectType || ''}>
               <SelectTrigger>
                 <SelectValue placeholder="Select project type" />
               </SelectTrigger>
@@ -180,7 +190,8 @@ export const ProjectBasics: React.FC<ProjectBasicsProps> = ({ data, onUpdate }) 
           
           <div className="space-y-2">
             <Label htmlFor="constructionStatus">Construction Status</Label>
-            <Select onValueChange={(value) => handleInputChange('constructionStatus', value)}>
+             {/* FIX: The 'value' prop was also missing here. It's now added. */}
+            <Select onValueChange={(value) => handleInputChange('constructionStatus', value)} value={data.constructionStatus || ''}>
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>

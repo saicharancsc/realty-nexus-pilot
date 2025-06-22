@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Shield, Lock, User } from 'lucide-react';
+import relaiLogo from '@/assets/relaiLogo.png';
 
 interface AdminAuthProps {
   onAuth: () => void;
@@ -35,11 +36,11 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuth }) => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center">
-              <Shield className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-[#1752ff] rounded-full flex items-center justify-center">
+              <img src={relaiLogo} alt="Relai Logo" className="w-32" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Portal</h1>
+          <h1 className="text-3xl font-bold text-[#1752ff] mb-2">Admin Portal</h1>
           <p className="text-gray-600">Manage project submissions</p>
         </div>
 
@@ -83,7 +84,7 @@ const AdminAuth: React.FC<AdminAuthProps> = ({ onAuth }) => {
               
               <Button 
                 type="submit" 
-                className="w-full bg-purple-600 hover:bg-purple-700" 
+                className="w-full bg-[#1752ff] hover:bg-[#0f3dcc]" 
                 disabled={isLoading}
               >
                 {isLoading ? 'Signing in...' : 'Admin Login'}
